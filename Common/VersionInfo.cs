@@ -1,9 +1,22 @@
-﻿using System.Reflection;
+﻿// ############################################################################
+// #                                                                          #
+// #        ---==>  T H I S  F I L E  I S   G E N E R A T E D  <==---         #
+// #                                                                          #
+// # This means that any edits to the .cs file will be lost when its          #
+// # regenerated. Changes should instead be applied to the corresponding      #
+// # template file (.tt)                                                      #
+// ############################################################################
 
 namespace LunaCommon
 {
-    public static class VersionInfo
+    public class VersionInfo
     {
-        public static string FullVersionNumber { get; } = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+		private const string MainVersion = "1";
+		private const string MajorVersion = "0";
+		private const string MinorVersion = "0";
+		private const string RevisionNumber = "11045";
+
+        public const string Version = MainVersion + "." + MajorVersion + "." + MinorVersion;
+		public const string FullVersion = MainVersion + "." + MajorVersion + "." + MinorVersion + "." + RevisionNumber;
     }
 }
