@@ -2,11 +2,22 @@
 <ModuleDefinition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
     <Fields>
         <FieldDefinition>
+            <FieldName>aniState</FieldName>
+        </FieldDefinition>
+        <FieldDefinition>
             <FieldName>animSwitch</FieldName>
+        </FieldDefinition>
+        <FieldDefinition>
+            <FieldName>animationIsDisabled</FieldName>
+        </FieldDefinition>
+        <FieldDefinition>
+            <!--TODO: UIFIELD-->
+            <FieldName>deployPercent</FieldName>
         </FieldDefinition>
     </Fields>
     <Methods>
         <MethodDefinition>
+            <!--TODO: check if this is fine as is called twice-->
             <MethodName>Toggle</MethodName>
         </MethodDefinition>
     </Methods>

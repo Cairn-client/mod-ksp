@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<ModuleDefinition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <Fields>
+        <FieldDefinition>
+            <FieldName>isOn</FieldName>
+        </FieldDefinition>
+        <FieldDefinition>
+            <FieldName>uiWriteLock</FieldName>
+        </FieldDefinition>
+        <FieldDefinition>
+            <!--TODO: UIFIELD-->
+            <FieldName>lightR</FieldName>
+        </FieldDefinition>
+        <FieldDefinition>
+            <!--TODO: UIFIELD-->
+            <FieldName>lightG</FieldName>
+        </FieldDefinition>
+        <FieldDefinition>
+            <!--TODO: UIFIELD-->
+            <FieldName>lightB</FieldName>
+        </FieldDefinition>
+    </Fields>
+    <Methods>
+        <MethodDefinition>
+            <!--TODO: check if this is fine as is called twice-->
+            <MethodName>LightsOff</MethodName>
+        </MethodDefinition>
+        <MethodDefinition>
+            <!--TODO: check if this is fine as is called twice-->
+            <MethodName>LightsOn</MethodName>
+        </MethodDefinition>
+    </Methods>
+</ModuleDefinition>
