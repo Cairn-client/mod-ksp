@@ -7,26 +7,12 @@
         <FieldDefinition>
             <FieldName>uiWriteLock</FieldName>
         </FieldDefinition>
-        <FieldDefinition>
-            <!--TODO: UIFIELD-->
-            <FieldName>lightR</FieldName>
-        </FieldDefinition>
-        <FieldDefinition>
-            <!--TODO: UIFIELD-->
-            <FieldName>lightG</FieldName>
-        </FieldDefinition>
-        <FieldDefinition>
-            <!--TODO: UIFIELD-->
-            <FieldName>lightB</FieldName>
-        </FieldDefinition>
     </Fields>
     <Methods>
         <MethodDefinition>
-            <!--TODO: check if this is fine as is called twice-->
             <MethodName>LightsOff</MethodName>
         </MethodDefinition>
         <MethodDefinition>
-            <!--TODO: check if this is fine as is called twice-->
             <MethodName>LightsOn</MethodName>
         </MethodDefinition>
     </Methods>
