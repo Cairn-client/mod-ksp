@@ -1,5 +1,4 @@
 ﻿using LmpClient.Base;
-using LmpClient.Extensions;
 using LmpClient.Systems.Lock;
 using LmpCommon.Enums;
 using LmpCommon.Time;
@@ -11,9 +10,6 @@ using UnityEngine;
 
 namespace LmpClient.Windows.Locks
 {
-    /// <summary>
-    /// Here we should only display the statistics for systems that contain ROUTINES or code that executes on every fixedupdate/update/lateupdate
-    /// </summary>
     public partial class LocksWindow : Window<LocksWindow>
     {
         #region Fields & properties
@@ -55,9 +51,6 @@ namespace LmpClient.Windows.Locks
                         VesselLocks.Add(new VesselLockDisplay
                         {
                             VesselId = FlightGlobals.Vessels[i].id,
-                            Loaded = FlightGlobals.Vessels[i].loaded,
-                            Packed = FlightGlobals.Vessels[i].packed,
-                            Immortal = FlightGlobals.Vessels[i].IsImmortal(),
                             VesselName = FlightGlobals.Vessels[i].name,
                             ControlLockOwner = LockSystem.LockQuery.GetControlLockOwner(FlightGlobals.Vessels[i].id),
                             UpdateLockOwner = LockSystem.LockQuery.GetUpdateLockOwner(FlightGlobals.Vessels[i].id),
@@ -66,9 +59,6 @@ namespace LmpClient.Windows.Locks
                     }
                     else
                     {
-                        existingVesselLock.Loaded = FlightGlobals.Vessels[i].loaded;
-                        existingVesselLock.Packed = FlightGlobals.Vessels[i].packed;
-                        existingVesselLock.Immortal = FlightGlobals.Vessels[i].IsImmortal();
                         existingVesselLock.VesselName = FlightGlobals.Vessels[i].name;
                         existingVesselLock.ControlLockOwner = LockSystem.LockQuery.GetControlLockOwner(FlightGlobals.Vessels[i].id);
                         existingVesselLock.UpdateLockOwner = LockSystem.LockQuery.GetUpdateLockOwner(FlightGlobals.Vessels[i].id);
@@ -97,7 +87,7 @@ namespace LmpClient.Windows.Locks
             LayoutOptions[1] = GUILayout.MaxWidth(WindowWidth);
             LayoutOptions[2] = GUILayout.MinHeight(WindowHeight);
             LayoutOptions[3] = GUILayout.MaxHeight(WindowHeight);
-            
+
             TextAreaOptions = new GUILayoutOption[1];
             TextAreaOptions[0] = GUILayout.ExpandWidth(true);
         }
