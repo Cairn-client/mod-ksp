@@ -26,13 +26,13 @@ namespace LmpCommon
                     _lastRequestTime = LunaComputerTime.UtcNow;
                 }
 
-                return MasterServerEndpoints;
+                return DedicatedServerEndpoints;
             }
         }
 
         private static readonly TimeSpan MaxRequestInterval = TimeSpan.FromMinutes(30);
         private static DateTime _lastRequestTime = DateTime.MinValue;
-        private static readonly ConcurrentHashSet<string> MasterServerEndpoints = new ConcurrentHashSet<string>();
+        private static readonly ConcurrentHashSet<string> DedicatedServerEndpoints = new ConcurrentHashSet<string>();
 
         public static bool IsDedicatedServer(string endpoint)
         {
@@ -49,7 +49,7 @@ namespace LmpCommon
         /// </summary>
         private static void RefreshDedicatedServersList()
         {
-            MasterServerEndpoints.Clear();
+            DedicatedServerEndpoints.Clear();
             try
             {
                 ServicePointManager.ServerCertificateValidationCallback = GithubCertification.MyRemoteCertificateValidationCallback;
@@ -90,7 +90,7 @@ namespace LmpCommon
                 }
 
                 foreach (var endpoint in parsedServers.Select(s => $"{s.Address.ToString()}:{s.Port}"))
-                    MasterServerEndpoints.Add(endpoint);
+                    DedicatedServerEndpoints.Add(endpoint);
             }
             catch (Exception)
             {
