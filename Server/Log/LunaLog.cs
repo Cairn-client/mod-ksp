@@ -1,12 +1,16 @@
-﻿using Server.Settings.Structures;
+﻿using LmpCommon;
+using LmpCommon.Enums;
+using Server.Settings.Structures;
 using Server.System;
 using System;
 using System.IO;
 
 namespace Server.Log
 {
-    public class LunaLog
+    public class LunaLog : BaseLogger
     {
+        private static readonly BaseLogger Singleton = new LunaLog();
+
         static LunaLog()
         {
             if (!FileHandler.FolderExists(LogFolder))
@@ -15,98 +19,66 @@ namespace Server.Log
 
         public static string LogFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs");
 
-        public static string LogFilename = Path.Combine(LogFolder,
-            $"lmpserver_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.log");
+        public static string LogFilename = Path.Combine(LogFolder, $"lmpserver_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.log");
 
-        #region Private methods
+        #region Overrides
 
-        private static void WriteLog(LogLevels level, string type, string message, bool sendToConsole)
+        protected override LogLevels LogLevel => LogSettings.SettingsStore.LogLevel;
+        protected override bool UseUtcTime => true;
+
+        protected override void AfterPrint(string line)
         {
-            if (level <= LogSettings.SettingsStore.LogLevel)
-            {
-                var output = LogSettings.SettingsStore.UseUtcTimeInLog
-                    ? $"[{DateTime.UtcNow:HH:mm:ss}][{type}]" : $"[{DateTime.Now:HH:mm:ss}][{type}]";
-
-                output += $": {message}";
-
-                if (sendToConsole)
-                {
-                    Console.WriteLine(output);
-                }
-
-                FileHandler.AppendToFile(LogFilename, output + Environment.NewLine);
-            }
+            base.AfterPrint(line);
+            FileHandler.AppendToFile(LogFilename, line + Environment.NewLine);
         }
 
         #endregion
 
         #region Public methods
 
-        public static void NetworkVerboseDebug(string message)
+        public new static void NetworkVerboseDebug(string message)
         {
-            Console.BackgroundColor = ConsoleColor.DarkBlue;
-            Console.ForegroundColor = ConsoleColor.Blue;
-            WriteLog(LogLevels.VerboseNetworkDebug, "VerboseNetwork", message, true);
-            Console.ResetColor();
+            Singleton.NetworkVerboseDebug(message);
         }
 
-        public static void NetworkDebug(string message)
+        public new static void NetworkDebug(string message)
         {
-            Console.BackgroundColor = ConsoleColor.DarkBlue;
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            WriteLog(LogLevels.NetworkDebug, "NetworkDebug", message, true);
-            Console.ResetColor();
+            Singleton.NetworkDebug(message);
         }
 
-        public static void Debug(string message)
+        public new static void Debug(string message)
         {
-            Console.ForegroundColor = ConsoleColor.Green;
-            WriteLog(LogLevels.Debug, "Debug", message, true);
-            Console.ResetColor();
+            Singleton.Debug(message);
         }
 
-        public static void Warning(string message)
+        public new static void Warning(string message)
         {
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            WriteLog(LogLevels.Normal, "Warning", message, true);
-            Console.ResetColor();
+            Singleton.Warning(message);
         }
 
-        public static void Info(string message)
+        public new static void Info(string message)
         {
-            Console.BackgroundColor = ConsoleColor.Yellow;
-            Console.ForegroundColor = ConsoleColor.Red;
-            WriteLog(LogLevels.Normal, "Info", message, true);
-            Console.ResetColor();
+            Singleton.Info(message);
         }
 
-        public static void Normal(string message)
+        public new static void Normal(string message)
         {
-            Console.ForegroundColor = ConsoleColor.Gray;
-            WriteLog(LogLevels.Normal, "LMP", message, true);
-            Console.ResetColor();
+            Singleton.Normal(message);
         }
 
-        public static void Error(string message)
+        public new static void Error(string message)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            WriteLog(LogLevels.Normal, "Error", message, true);
-            Console.ResetColor();
+            Singleton.Error(message);
         }
 
-        public static void Fatal(string message)
+        public new static void Fatal(string message)
         {
-            Console.BackgroundColor = ConsoleColor.DarkRed;
-            Console.ForegroundColor = ConsoleColor.Red;
-            WriteLog(LogLevels.Normal, "Fatal", message, true);
-            Console.ResetColor();
+            Singleton.Fatal(message);
         }
 
-        public static void ChatMessage(string message)
+        public new static void ChatMessage(string message)
         {
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            WriteLog(LogLevels.Normal, "Chat", message, true);
-            Console.ResetColor();
+            Singleton.ChatMessage(message);
         }
 
         #endregion
