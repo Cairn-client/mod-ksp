@@ -110,9 +110,17 @@ namespace LmpClient.Systems.ShareContracts
                 return;
             }
 
-            if (contract.GetType() == typeof(RecoverAsset))
+            if (contract.GetType().Name == "RecoverAsset")
             {
                 //We don't support rescue contracts. See: https://github.com/LunaMultiplayer/LunaMultiplayer/issues/226#issuecomment-431831526
+                contract.Withdraw();
+                contract.Kill();
+                return;
+            }
+
+            if (contract.GetType().Name == "TourismContract")
+            {
+                //We don't support tourism contracts.
                 contract.Withdraw();
                 contract.Kill();
                 return;
