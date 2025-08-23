@@ -3,6 +3,7 @@ using KSP.UI.Screens;
 using LmpClient.Base;
 using LmpClient.Events;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
@@ -136,7 +137,11 @@ namespace LmpClient.Systems.KerbalSys
                 var refreshDialog = false;
                 while (KerbalsToRemove.TryDequeue(out var kerbalNameToRemove))
                 {
-                    HighLogic.CurrentGame.CrewRoster.Remove(kerbalNameToRemove);
+                    var kerbalToRemove = HighLogic.CurrentGame.CrewRoster.Crew.FirstOrDefault(k => k.name == kerbalNameToRemove);
+                    if (kerbalToRemove != null)
+                    {
+                        HighLogic.CurrentGame.CrewRoster.Remove(kerbalToRemove);
+                    }
                     refreshDialog = true;
                 }
 
@@ -208,61 +213,65 @@ namespace LmpClient.Systems.KerbalSys
                 return;
             }
 
-            if (!HighLogic.CurrentGame.CrewRoster.Exists(protoCrew.name))
+            var existingKerbal = HighLogic.CurrentGame.CrewRoster.Crew.FirstOrDefault(k => k.name == protoCrew.name);
+
+            if (existingKerbal == null)
             {
                 HighLogic.CurrentGame.CrewRoster.AddCrewMember(protoCrew);
             }
             else
             {
-                UpdateKerbalData(crewNode, protoCrew);
+                UpdateKerbalData(crewNode, existingKerbal);
             }
         }
 
         /// <summary>
         /// Updates an existing Kerbal
         /// </summary>
-        private void UpdateKerbalData(ConfigNode crewNode, ProtoCrewMember protoCrew)
+        private void UpdateKerbalData(ConfigNode crewNode, ProtoCrewMember existingProtoCrew)
         {
+            var newProtoCrew = new ProtoCrewMember(HighLogic.CurrentGame.Mode, crewNode);
+
             var careerLogNode = crewNode.GetNode("CAREER_LOG");
             if (careerLogNode != null)
             {
                 //Insert wolf howling at the moon here
-                HighLogic.CurrentGame.CrewRoster[protoCrew.name].careerLog.Entries.Clear();
-                HighLogic.CurrentGame.CrewRoster[protoCrew.name].careerLog.Load(careerLogNode);
+                existingProtoCrew.careerLog.Entries.Clear();
+                existingProtoCrew.careerLog.Load(careerLogNode);
             }
             else
             {
-                LunaLog.Log($"[LMP]: Career log node for {protoCrew.name} is empty!");
+                LunaLog.Log($"[LMP]: Career log node for {existingProtoCrew.name} is empty!");
             }
 
             var flightLogNode = crewNode.GetNode("FLIGHT_LOG");
             if (flightLogNode != null)
             {
                 //And here. Someone "cannot into" lists and how to protect them.
-                HighLogic.CurrentGame.CrewRoster[protoCrew.name].flightLog.Entries.Clear();
-                HighLogic.CurrentGame.CrewRoster[protoCrew.name].flightLog.Load(flightLogNode);
+                existingProtoCrew.flightLog.Entries.Clear();
+                existingProtoCrew.flightLog.Load(flightLogNode);
             }
-            HighLogic.CurrentGame.CrewRoster[protoCrew.name].courage = protoCrew.courage;
-            HighLogic.CurrentGame.CrewRoster[protoCrew.name].experience = protoCrew.experience;
-            HighLogic.CurrentGame.CrewRoster[protoCrew.name].experienceLevel = protoCrew.experienceLevel;
-            HighLogic.CurrentGame.CrewRoster[protoCrew.name].experienceTrait = protoCrew.experienceTrait;
-            HighLogic.CurrentGame.CrewRoster[protoCrew.name].gExperienced = protoCrew.gExperienced;
-            HighLogic.CurrentGame.CrewRoster[protoCrew.name].gIncrement = protoCrew.gIncrement;
-            HighLogic.CurrentGame.CrewRoster[protoCrew.name].geeForce = protoCrew.geeForce;
-            HighLogic.CurrentGame.CrewRoster[protoCrew.name].gender = protoCrew.gender;
-            HighLogic.CurrentGame.CrewRoster[protoCrew.name].hasToured = protoCrew.hasToured;
-            HighLogic.CurrentGame.CrewRoster[protoCrew.name].isBadass = protoCrew.isBadass;
-            HighLogic.CurrentGame.CrewRoster[protoCrew.name].inactiveTimeEnd = protoCrew.inactiveTimeEnd;
-            HighLogic.CurrentGame.CrewRoster[protoCrew.name].outDueToG = protoCrew.outDueToG;
-            HighLogic.CurrentGame.CrewRoster[protoCrew.name].seat = protoCrew.seat;
-            HighLogic.CurrentGame.CrewRoster[protoCrew.name].seatIdx = protoCrew.seatIdx;
-            HighLogic.CurrentGame.CrewRoster[protoCrew.name].stupidity = protoCrew.stupidity;
-            HighLogic.CurrentGame.CrewRoster[protoCrew.name].trait = protoCrew.trait;
-            HighLogic.CurrentGame.CrewRoster[protoCrew.name].UTaR = protoCrew.UTaR;
-            HighLogic.CurrentGame.CrewRoster[protoCrew.name].veteran = protoCrew.veteran;
+            existingProtoCrew.courage = newProtoCrew.courage;
+            existingProtoCrew.experience = newProtoCrew.experience;
+            existingProtoCrew.experienceLevel = newProtoCrew.experienceLevel;
+            existingProtoCrew.experienceTrait = newProtoCrew.experienceTrait;
+            existingProtoCrew.gExperienced = newProtoCrew.gExperienced;
+            existingProtoCrew.gIncrement = newProtoCrew.gIncrement;
+            existingProtoCrew.geeForce = newProtoCrew.geeForce;
+            existingProtoCrew.gender = newProtoCrew.gender;
+            existingProtoCrew.hasToured = newProtoCrew.hasToured;
+            existingProtoCrew.isBadass = newProtoCrew.isBadass;
+            existingProtoCrew.inactiveTimeEnd = newProtoCrew.inactiveTimeEnd;
+            existingProtoCrew.outDueToG = newProtoCrew.outDueToG;
+            existingProtoCrew.seat = newProtoCrew.seat;
+            existingProtoCrew.seatIdx = newProtoCrew.seatIdx;
+            existingProtoCrew.stupidity = newProtoCrew.stupidity;
+            existingProtoCrew.trait = newProtoCrew.trait;
+            existingProtoCrew.UTaR = newProtoCrew.UTaR;
+            existingProtoCrew.veteran = newProtoCrew.veteran;
 
-            SetKerbalTypeWithoutTriggeringEvent(HighLogic.CurrentGame.CrewRoster[protoCrew.name], protoCrew.type);
-            SetKerbalStatusWithoutTriggeringEvent(HighLogic.CurrentGame.CrewRoster[protoCrew.name], protoCrew.rosterStatus);
+            SetKerbalTypeWithoutTriggeringEvent(existingProtoCrew, newProtoCrew.type);
+            SetKerbalStatusWithoutTriggeringEvent(existingProtoCrew, newProtoCrew.rosterStatus);
         }
 
         #endregion
