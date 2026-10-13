@@ -1,0 +1,68 @@
+name: Cairn release
+
+# A Cairn release is a bare X.Y.Z tag on master. The client of Luna Multiplayer is built against Kerbal Space Program's own assemblies, which
+# only the project's build service can open, so the pack is made from the client zip the project itself publishes on its releases, checked
+# against a pinned sha256 (.github/cairn/Build-Pack.ps1). The pack, pack-index.json and game.json are published: the Cairn launcher reads the
+# index to install and update this mod. RELEASE_CHANNEL=beta publishes a pre-release (only players who chose beta are offered it).
+on:
+  push:
+    tags: ['[0-9]+.[0-9]+.[0-9]+']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  pack:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - name: The tag must be on master and equal VERSION
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: pwsh
+        run: |
+          git fetch origin master
+          git merge-base --is-ancestor $env:GITHUB_SHA origin/master
+          if ($LASTEXITCODE -ne 0) { throw "tag $env:GITHUB_REF_NAME is not on master" }
+          $v = (Get-Content VERSION -TotalCount 1).Trim()
+          if ($v -ne $env:GITHUB_REF_NAME) { throw "tag $env:GITHUB_REF_NAME is not VERSION ($v)" }
+
+      - name: Get the client the project published
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          New-Item -ItemType Directory -Force dl | Out-Null
+          gh release download 0.29.2 -R LunaMultiplayer/LunaMultiplayer -p LunaMultiplayer-Client-Release.zip -D dl
+          $h = (Get-FileHash dl/LunaMultiplayer-Client-Release.zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          Write-Host "LunaMultiplayer-Client-Release.zip 0.29.2 sha256 $h"
+          if ($h -ne 'd944ec93df1891dbc136d0d59b69ba9adc8c215d1c0cbaa15b7742ad0babb9c4') { throw "the client zip is not the one this pack was made with ($h)" }
+
+      - name: Build the pack
+        shell: pwsh
+        run: ./.github/cairn/Build-Pack.ps1 -ClientZip dl/LunaMultiplayer-Client-Release.zip -UpstreamVersion 0.29.2
+
+      - name: Changelog
+        shell: pwsh
+        run: ./.github/cairn/New-ReleaseNotes.ps1 -OutFile notes.md -Tag $env:GITHUB_REF_NAME
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cairn-pack
+          path: |
+            release/Cairn-Pack-ksp-*.zip
+            release/pack-index.json
+            .github/cairn/game/game.json
+
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $assets = @("release/Cairn-Pack-ksp-$env:GITHUB_REF_NAME.zip", 'release/pack-index.json') + (Get-ChildItem .github/cairn/game -File | ForEach-Object { $_.FullName })
+          $flags = @()
+          if ((Get-Content RELEASE_CHANNEL -Raw).Trim() -eq 'beta') { $flags += '--prerelease' }
+          gh release create $env:GITHUB_REF_NAME @assets --title $env:GITHUB_REF_NAME --notes-file notes.md --verify-tag @flags

@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "id": "ksp",
+  "name": "Kerbal Space Program",
+  "developer": "Squad",
+  "franchise": "Kerbal Space Program",
+  "steamAppId": 220200,
+  "exe": "KSP_x64.exe",
+  "description": "Build rockets and run a space program together. Luna Multiplayer shares one game between players: the same Kerbin, vessels, contracts and a common clock, with everyone flying at once.",
+  "accent": "#4FA3E0",
+  "images": {
+    "background": "ksp.jpg",
+    "logo": "ksp-logo.png",
+    "hero": "ksp-hero.jpg",
+    "poster": "ksp-poster.jpg",
+    "screenshots": [ "ksp-shot-1.jpg", "ksp-shot-2.jpg" ]
+  },
+  "ownSession": true,
+  "setup": [
+    { "kind": "steam-running" },
+    { "kind": "steam-app", "appId": 220200, "title": "Kerbal Space Program", "detail": "Install Kerbal Space Program from your Steam library." },
+    { "kind": "game-found" },
+    { "kind": "mod-installed", "detail": "Download the mod above: Cairn puts it, and Harmony which it needs, in the game's GameData folder." }
+  ],
+  "hostSteps": [
+    "Download the mod above. Cairn puts it in the game's GameData folder and keeps it up to date.",
+    "Hosting needs Luna Multiplayer's server (LMPServer, from the project's releases page): start it on your PC and forward its port, 8800 (UDP).",
+    "Press Play to start Kerbal Space Program and open Luna Multiplayer from its button in the main menu.",
+    "Connect to your own server by its address and share that address with your friends."
+  ],
+  "joinSteps": [
+    "Download the mod above, the same version as the server's, then press Play.",
+    "Open Luna Multiplayer from its button in the main menu.",
+    "Pick a server in the list, or type the host's address, and connect."
+  ],
+  "features": [
+    { "title": "Sessions", "items": [
+      { "name": "Join a server", "detail": "Join friends' servers by address, or public ones from the server list. The mod and the server must be the same version.", "status": "inTest" },
+      { "name": "Kept up to date", "detail": "Cairn installs the mod and the Harmony library it needs in the game's folder and updates them when a new version is released." }
+    ] },
+    { "title": "Space program", "items": [
+      { "name": "Vessels and flights", "detail": "Vessels, docking, time warp and the common clock are shared between players.", "status": "inTest" },
+      { "name": "Career and science", "detail": "Funds, science, contracts and technology are shared in career and science games.", "status": "inTest" }
+    ] }
+  ]
+}
